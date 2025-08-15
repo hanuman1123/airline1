@@ -3,6 +3,7 @@ import HelpMenu from "./HelpMenu";
 import RegionSelector from "./RegionSelector";
 import ProfileMenu from "./ProfileMenu";
 import SearchBar from "./SearchBar";
+// import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
@@ -18,7 +19,10 @@ function Navbar() {
       </div>
 
       {/* Right Section */}
-      <div className="flex-1 flex justify-end items-center gap-4">
+      <div className="flex-1 flex justify-end items-center gap-6">
+        {/* My Bookings Link */}
+        
+
         <HelpMenu />
         <RegionSelector />
         <ProfileMenu />

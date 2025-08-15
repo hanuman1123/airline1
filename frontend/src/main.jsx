@@ -1,13 +1,14 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
 import "./index.css";
-import App from "./App.jsx";
-import {BrowserRouter} from "react-router-dom";
+// import { BookingProvider } from "../src/Components/Navbar/BookingContext";
+import { BrowserRouter } from "react-router-dom";
 
-createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <StrictMode>
-      <App />
-    </StrictMode>
-  </BrowserRouter>
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <BrowserRouter>
+        <App />
+    </BrowserRouter>
+  </React.StrictMode>
 );
