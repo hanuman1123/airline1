@@ -1,49 +1,36 @@
-// src/pages/BookingPage.jsx
-import React, { useState } from "react";
-import FlightCard from "../Components/Hompage/FIeldCard.jsx";
-import TicketBooking from "../pages/TicketBooking.jsx";
-import flightsData from "../data/flightsData.js"
+// src/pages/Booking.jsx
+import React from "react";
+import { useBooking } from "../pages/Booking/BookingContext"
 
-export default function BookingPage() {
-  const [selectedFlight, setSelectedFlight] = useState(null);
-  const [bookings, setBookings] = useState([]);
+export default function Booking() {
+  const { bookings } = useBooking();
 
-  const handleBook = (booking) => {
-    setBookings((prev) => [...prev, booking]);
-    setSelectedFlight(null);
-  };
+  if (bookings.length === 0) {
+    return <h2 className="text-center mt-10">No bookings yet ✈️</h2>;
+  }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Available Flights</h1>
-      {!selectedFlight && (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {flightsData.map((f) => (
-            <FlightCard key={f.id} f={f} onSelect={setSelectedFlight} />
-          ))}
-        </div>
-      )}
-
-      {selectedFlight && (
-        <TicketBooking
-          flight={selectedFlight}
-          onBook={handleBook}
-          onCancel={() => setSelectedFlight(null)}
-        />
-      )}
-
-      {bookings.length > 0 && (
-        <div className="mt-8">
-          <h2 className="text-xl font-bold mb-2">Booked Tickets</h2>
-          <ul className="list-disc pl-6">
-            {bookings.map((b, i) => (
-              <li key={i}>
-                {b.passengerName} booked {b.passengers} seat(s) on {b.airline} — {b.departureDate} {b.departureTime}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Your Bookings</h1>
+      <div className="grid md:grid-cols-2 gap-4">
+        {bookings.map((b, i) => (
+          <div key={i} className="card bg-white shadow-lg p-4 border">
+            <h2 className="font-bold">{b.airline}</h2>
+            <p>
+              {b.from} → {b.to}
+            </p>
+            <p>
+              {b.departureDate} at {b.departureTime}
+            </p>
+            <p className="font-bold text-primary">₹{b.price}</p>
+            <hr className="my-2" />
+            <h3 className="font-semibold">Passenger</h3>
+            <p>{b.passenger.name}, {b.passenger.age} ({b.passenger.gender})</p>
+            <p>{b.passenger.email}</p>
+            <p>{b.passenger.phone}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
