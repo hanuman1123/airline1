@@ -1,9 +1,22 @@
-// src/components/HeroSearch.jsx
 import React, { useState } from "react";
-import { Plane, MapPin, Users, Calendar, Search } from "lucide-react";
-import Field from "./Field";
-import FlightCard from "./FIeldCard";
-import flightsData, { generateFlightsForDate } from "../../data/flightsData";
+import { generateFlightsForDate } from "../../data/flightsData";
+import HeroHeader from "./HeroHeader";
+import SearchForm from "./SearchForm";
+import FlightResults from "./FlightResults";
+
+// Cities for autocomplete
+const cities = [
+  { code: "HYD", name: "Hyderabad" },
+  { code: "DEL", name: "Delhi" },
+  { code: "BOM", name: "Mumbai" },
+  { code: "MAA", name: "Chennai" },
+  { code: "BLR", name: "Bengaluru" },
+  { code: "CCU", name: "Kolkata" },
+  { code: "PNQ", name: "Pune" },
+  { code: "GOI", name: "Goa" },
+  { code: "AMD", name: "Ahmedabad" },
+  { code: "JAI", name: "Jaipur" },
+];
 
 export default function HeroSearch() {
   const [form, setForm] = useState({
@@ -17,7 +30,36 @@ export default function HeroSearch() {
   const [results, setResults] = useState([]);
   const [error, setError] = useState("");
 
+  const [fromSuggestions, setFromSuggestions] = useState([]);
+  const [toSuggestions, setToSuggestions] = useState([]);
+
   const onChange = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  const handleFromInput = (value) => {
+    onChange("from", value.toUpperCase());
+    setFromSuggestions(
+      value.length > 0
+        ? cities.filter(
+            (c) =>
+              c.code.toLowerCase().includes(value.toLowerCase()) ||
+              c.name.toLowerCase().includes(value.toLowerCase())
+          )
+        : []
+    );
+  };
+
+  const handleToInput = (value) => {
+    onChange("to", value.toUpperCase());
+    setToSuggestions(
+      value.length > 0
+        ? cities.filter(
+            (c) =>
+              c.code.toLowerCase().includes(value.toLowerCase()) ||
+              c.name.toLowerCase().includes(value.toLowerCase())
+          )
+        : []
+    );
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,29 +68,30 @@ export default function HeroSearch() {
     setResults([]);
 
     setTimeout(() => {
-      // Build the pool for the selected date; fall back to today's if none chosen
-      const pool = form.departureDate
-        ? generateFlightsForDate(form.departureDate)
-        : flightsData;
+      if (!form.from || !form.to || !form.departureDate) {
+        setError("Please enter From, To, and Departure Date");
+        setLoading(false);
+        return;
+      }
 
-      const filteredFlights = pool.filter((flight) => {
-        const fromMatch =
-          !form.from || flight.from.toLowerCase() === form.from.toLowerCase();
-        const toMatch =
-          !form.to || flight.to.toLowerCase() === form.to.toLowerCase();
-        const dateMatch =
-          !form.departureDate || flight.departureDate === form.departureDate;
-        const classMatch =
-          !form.travelClass ||
-          flight.travelClass.toLowerCase() === form.travelClass.toLowerCase();
+      // ✅ Generate flights only for this route/date
+      let flights = generateFlightsForDate(
+        form.departureDate,
+        form.from,
+        form.to
+      );
 
-        return fromMatch && toMatch && dateMatch && classMatch;
-      });
+      // ✅ Filter by class if selected
+      if (form.travelClass) {
+        flights = flights.filter(
+          (f) => f.travelClass.toLowerCase() === form.travelClass.toLowerCase()
+        );
+      }
 
-      if (filteredFlights.length === 0) {
+      if (flights.length === 0) {
         setError("No matching flights found");
       }
-      setResults(filteredFlights);
+      setResults(flights);
       setLoading(false);
     }, 300);
   };
@@ -57,106 +100,22 @@ export default function HeroSearch() {
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-sky-50 to-base-100 pointer-events-none" />
       <div className="container mx-auto px-4 pt-10 pb-6 relative">
-        {/* Headline */}
-        <div className="text-center max-w-3xl mx-auto mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-sm">
-            <Plane className="w-4 h-4 rotate-45" />
-            Smart, fast & affordable flights
-          </div>
-          <h1 className="mt-3 text-3xl font-bold leading-tight">
-            Book flights with ease
-          </h1>
-          <p className="mt-3 text-base-content/60">
-            Compare fares across airlines, choose your class, and check out in
-            minutes.
-          </p>
-        </div>
-
-        {/* Search Card */}
+        <HeroHeader />
         <div className="mx-auto max-w-4xl">
-          <form
+          <SearchForm
+            form={form}
+            onChange={onChange}
             onSubmit={handleSubmit}
-            className="card bg-base-100 shadow-xl border border-base-200"
-          >
-            <div className="card-body grid grid-cols-1 md:grid-cols-5 gap-4">
-              <Field label="From" icon={<MapPin className="w-4 h-4" />}>
-                <input
-                  type="text"
-                  placeholder="HYD"
-                  className="input input-bordered w-full"
-                  value={form.from}
-                  onChange={(e) =>
-                    onChange("from", e.target.value.toUpperCase())
-                  }
-                />
-              </Field>
-
-              <Field label="To" icon={<MapPin className="w-4 h-4" />}>
-                <input
-                  type="text"
-                  placeholder="DEL"
-                  className="input input-bordered w-full"
-                  value={form.to}
-                  onChange={(e) => onChange("to", e.target.value.toUpperCase())}
-                />
-              </Field>
-
-              <Field label="Departure Date" icon={<Calendar className="w-4 h-4" />}>
-                <input
-                  type="date"
-                  className="input input-bordered w-full"
-                  value={form.departureDate}
-                  onChange={(e) => onChange("departureDate", e.target.value)}
-                />
-              </Field>
-
-              <Field label="Class" icon={<Plane className="w-4 h-4" />}>
-                <select
-                  className="select select-bordered w-full"
-                  value={form.travelClass}
-                  onChange={(e) => onChange("travelClass", e.target.value)}
-                >
-                  <option value="">Any</option>
-                  <option value="economy">Economy</option>
-                  <option value="premium">Premium Economy</option>
-                  <option value="business">Business</option>
-                  <option value="first">First</option>
-                </select>
-              </Field>
-
-              <Field label="Passengers" icon={<Users className="w-4 h-4" />}>
-                <input
-                  type="number"
-                  min={1}
-                  className="input input-bordered w-full"
-                  value={form.passengers}
-                  onChange={(e) =>
-                    onChange("passengers", Math.max(1, Number(e.target.value)))
-                  }
-                />
-              </Field>
-            </div>
-
-            <div className="p-4 flex justify-end">
-              <button type="submit" className="btn btn-primary">
-                <Search className="w-4 h-4" /> Search Flights
-              </button>
-            </div>
-            {error && <div className="alert alert-info mt-4">{error}</div>}
-          </form>
+            fromSuggestions={fromSuggestions}
+            toSuggestions={toSuggestions}
+            handleFromInput={handleFromInput}
+            handleToInput={handleToInput}
+            setFromSuggestions={setFromSuggestions}
+            setToSuggestions={setToSuggestions}
+            error={error}
+          />
         </div>
-
-        {/* Results */}
-        <div className="max-w-5xl mx-auto mt-6 grid gap-4">
-          {loading && <div className="loading loading-bars loading-lg mx-auto" />}
-          {!loading && results.length > 0 && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {results.map((f) => (
-                <FlightCard key={f.id} f={f} />
-              ))}
-            </div>
-          )}
-        </div>
+        <FlightResults loading={loading} results={results} />
       </div>
     </section>
   );
