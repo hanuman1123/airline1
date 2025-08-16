@@ -3,6 +3,7 @@ import Navbar from "./Components/Navbar/Navbar";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
+import Booking from "./pages/BookingPage.jsx"  // ✅ import Booking page
 
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
@@ -29,7 +30,6 @@ function App() {
 
   return (
     <>
-      {/* Always mount Toaster globally for toast notifications */}
       <Toaster position="top-center" reverseOrder={false} />
 
       <Routes>
@@ -46,13 +46,30 @@ function App() {
             )
           }
         />
+
         <Route
           path="/signup"
           element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
         />
+
         <Route
           path="/login"
           element={!authUser ? <LoginPage /> : <Navigate to="/" />}
+        />
+
+        {/* ✅ Booking page (protected) */}
+        <Route
+          path="/booking"
+          element={
+            authUser ? (
+              <>
+                <Navbar />
+                <Booking />
+              </>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
         />
       </Routes>
     </>

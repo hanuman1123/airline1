@@ -1,43 +1,108 @@
 // src/components/FlightCard.jsx
-import React from "react";
+import React, { useState } from "react";
 import { Plane, Calendar } from "lucide-react";
+import { useBooking } from "../../pages/Booking/BookingContext";
 
-export default function FlightCard({ f, onSelect }) {
+export default function FlightCard({ f }) {
+  const { addBooking } = useBooking();
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    age: "",
+    gender: "",
+    email: "",
+    phone: "",
+  });
+
+  const handleBook = () => {
+    addBooking({ ...f, passenger: form });
+    setShowForm(false);
+    alert("🎉 Flight booked successfully!");
+  };
+
   return (
     <div className="card bg-white shadow-lg border border-base-200 p-4">
       {/* Airline & Class */}
       <div className="flex justify-between items-center">
-        <h2 className="font-bold text-lg">{f.airline || "Select Airline"}</h2>
-        <span className="badge badge-primary capitalize">
-          {f.travelClass || "Select Class"}
-        </span>
+        <h2 className="font-bold text-lg">{f.airline}</h2>
+        <span className="badge badge-primary capitalize">{f.travelClass}</span>
       </div>
 
       {/* Route */}
       <div className="mt-2 flex items-center gap-2 text-gray-600">
         <Plane className="w-4 h-4" />
-        {f.from || "Select From"} → {f.to || "Select To"}
+        {f.from} → {f.to}
       </div>
 
       {/* Departure Date & Time */}
       <div className="mt-1 text-sm text-gray-500 flex items-center gap-1">
         <Calendar className="w-4 h-4" />
-        {f.departureDate || "Select Date"}{" "}
-        {f.departureTime ? `at ${f.departureTime}` : ""}
+        {f.departureDate} at {f.departureTime}
       </div>
 
       {/* Price */}
-      <div className="mt-2 font-bold text-lg text-primary">
-        {f.price ? `₹${f.price}` : "Select Price"}
-      </div>
+      <div className="mt-2 font-bold text-lg text-primary">₹{f.price}</div>
 
       {/* Select Button */}
       <button
-        onClick={() => onSelect(f)}
+        onClick={() => setShowForm(true)}
         className="btn btn-sm btn-outline mt-3 w-full"
       >
-        {f.buttonLabel || "Select"}
+        Select
       </button>
+
+      {/* Passenger Form */}
+      {showForm && (
+        <div className="mt-3 border-t pt-3">
+          <h3 className="font-semibold mb-2">Passenger Details</h3>
+          <input
+            type="text"
+            placeholder="Name"
+            className="input input-bordered w-full mb-2"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+          <input
+            type="number"
+            placeholder="Age"
+            className="input input-bordered w-full mb-2"
+            value={form.age}
+            onChange={(e) => setForm({ ...form, age: e.target.value })}
+          />
+          <select
+            className="select select-bordered w-full mb-2"
+            value={form.gender}
+            onChange={(e) => setForm({ ...form, gender: e.target.value })}
+          >
+            <option disabled value="">
+              Select Gender
+            </option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+          <input
+            type="email"
+            placeholder="Email"
+            className="input input-bordered w-full mb-2"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+          <input
+            type="tel"
+            placeholder="Phone"
+            className="input input-bordered w-full mb-2"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          />
+          <button
+            onClick={handleBook}
+            className="btn btn-primary w-full mt-2"
+          >
+            Book Flight
+          </button>
+        </div>
+      )}
     </div>
   );
 }

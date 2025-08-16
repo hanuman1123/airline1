@@ -3,7 +3,7 @@ import HelpMenu from "./HelpMenu";
 import RegionSelector from "./RegionSelector";
 import ProfileMenu from "./ProfileMenu";
 import SearchBar from "./SearchBar";
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
@@ -21,7 +21,12 @@ function Navbar() {
       {/* Right Section */}
       <div className="flex-1 flex justify-end items-center gap-6">
         {/* My Bookings Link */}
-        
+        <Link
+          to="/booking"
+          className="text-sm font-medium hover:text-primary transition"
+        >
+          My Bookings
+        </Link>
 
         <HelpMenu />
         <RegionSelector />
