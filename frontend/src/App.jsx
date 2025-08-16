@@ -3,13 +3,14 @@ import Navbar from "./Components/Navbar/Navbar";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
-import Booking from "./pages/BookingPage.jsx"  // ✅ import Booking page
+import Booking from "./pages/BookingPage.jsx"; // ✅ Booking page
+import ProfilePage from "./pages/ProfilePage.jsx"; // ✅ Profile page
 
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
-import { useAuthStore } from "./store/useAuthStore.js"; // ✅ for auth state
+import { useAuthStore } from "./store/useAuthStore.js"; // ✅ Auth state
 
 function App() {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -33,6 +34,7 @@ function App() {
       <Toaster position="top-center" reverseOrder={false} />
 
       <Routes>
+        {/* ✅ Home page (protected) */}
         <Route
           path="/"
           element={
@@ -47,11 +49,13 @@ function App() {
           }
         />
 
+        {/* ✅ Signup */}
         <Route
           path="/signup"
           element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
         />
 
+        {/* ✅ Login */}
         <Route
           path="/login"
           element={!authUser ? <LoginPage /> : <Navigate to="/" />}
@@ -65,6 +69,21 @@ function App() {
               <>
                 <Navbar />
                 <Booking />
+              </>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+
+        {/* ✅ Profile page (protected) */}
+        <Route
+          path="/profile"
+          element={
+            authUser ? (
+              <>
+                <Navbar />
+                <ProfilePage />
               </>
             ) : (
               <Navigate to="/login" />

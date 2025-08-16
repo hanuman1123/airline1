@@ -1,10 +1,10 @@
 // src/components/FlightCard.jsx
 import React, { useState } from "react";
 import { Plane, Calendar } from "lucide-react";
-import { useBooking } from "../../pages/Booking/BookingContext";
+import { useBookingStore } from "../../store/useBookingStore.js"; // ✅ Zustand instead of Context
 
 export default function FlightCard({ f }) {
-  const { addBooking } = useBooking();
+  const { addBooking } = useBookingStore(); // ✅ Zustand function
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -15,7 +15,7 @@ export default function FlightCard({ f }) {
   });
 
   const handleBook = () => {
-    addBooking({ ...f, passenger: form });
+    addBooking(f, form); // ✅ Store flight + passenger in Zustand
     setShowForm(false);
     alert("🎉 Flight booked successfully!");
   };
