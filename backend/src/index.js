@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://airline1-qevj-git-main-jagadeeshs-projects-45be6029.vercel.app", // ✅ add https
+  "https://jagadeesh-airline.vercel.app", // ✅ add https
 ];
 
 
