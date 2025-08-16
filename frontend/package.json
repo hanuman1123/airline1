@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.12",
+    "airlinesproject": "file:..",
     "axios": "^1.11.0",
     "daisyui": "^5.0.50",
     "lucide-react": "^0.539.0",
